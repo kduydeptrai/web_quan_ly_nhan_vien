@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HMB Agency · Quản lý nhân viên</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ==================== RESET & VARIABLES ==================== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --brand-500: #1a5cff;
+      --brand-600: #0d47d9;
+      --brand-700: #0a3bb3;
+      --brand-50: #eef4ff;
+      --brand-100: #dbe7ff;
+      --accent-500: #ff6b35;
+      --accent-50: #fff2ec;
+      --ink-900: #0a1628;
+      --ink-800: #13233d;
+      --ink-700: #243b5a;
+      --ink-600: #3a526e;
+      --ink-500: #5a708a;
+      --ink-400: #8598af;
+      --ink-300: #b2c1d4;
+      --ink-200: #d8e2ee;
+      --ink-100: #eef3f9;
+      --ink-50: #f7fafd;
+      --success-500: #0ea76a;
+      --success-50: #e6f9f0;
+      --warning-500: #e8a317;
+      --warning-50: #fef9e7;
+      --danger-500: #e0426a;
+      --danger-50: #fdeef2;
+      --surface: #ffffff;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+
+      --shadow-xs: 0 1px 2px rgba(10, 22, 40, 0.05);
+      --shadow-sm: 0 2px 6px rgba(10, 22, 40, 0.06);
+      --shadow-md: 0 8px 22px -8px rgba(10, 22, 40, 0.18);
+      --shadow-lg: 0 24px 48px -18px rgba(10, 22, 40, 0.28);
+
+      --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      background: #f0f4fa;
+      background-image:
+        radial-gradient(circle at 0% 0%, rgba(26, 92, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 100% 100%, rgba(255, 107, 53, 0.06) 0%, transparent 40%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      color: var(--ink-800);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.75rem 1.25rem 0;
+    }
+
+    .app-shell {
+      max-width: 1360px;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ==================== HEADER ==================== */
+    .brand-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .brand-logo { display: flex; align-items: center; gap: 0.85rem; text-decoration: none; color: inherit; }
+
+    .brand-mark {
+      width: 52px; height: 52px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(140deg, var(--brand-500) 0%, #3d7bff 60%, var(--accent-500) 140%);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 900; font-size: 1.15rem;
+      letter-spacing: -0.5px;
+      box-shadow: 0 8px 18px -6px rgba(26, 92, 255, 0.55);
+      position: relative; overflow: hidden; flex-shrink: 0;
+    }
+    .brand-mark::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(140deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+    }
+
+    .brand-text-block { display: flex; flex-direction: column; line-height: 1.15; }
+
+    .brand-name {
+      font-size: 1.45rem; font-weight: 900; letter-spacing: -0.03em;
+      background: linear-gradient(100deg, var(--brand-700) 0%, var(--brand-500) 55%, var(--accent-500) 120%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; white-space: nowrap;
+    }
+
+    .brand-tagline {
+      font-size: 0.7rem; font-weight: 700; color: var(--ink-400);
+      letter-spacing: 0.2em; text-transform: uppercase; margin-top: 3px;
+    }
+
+    .header-meta { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+    .meta-chip {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--surface); border: 1px solid var(--ink-200);
+      padding: 0.5rem 0.95rem; border-radius: var(--radius-sm);
+      font-size: 0.8rem; font-weight: 600; color: var(--ink-600);
+      box-shadow: var(--shadow-xs); transition: var(--transition);
+    }
+    .meta-chip i { color: var(--brand-500); font-size: 0.82rem; }
+    .meta-chip:hover { border-color: var(--brand-100); color: var(--ink-900); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+
+    /* ==================== VIEWS ==================== */
+    .view { display: none; animation: viewIn 0.3s ease-out; }
+    .view.active { display: block; }
+
+    @keyframes viewIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==================== PANEL ==================== */
+    .panel {
+      background: var(--surface); border-radius: var(--radius-lg);
+      border: 1px solid var(--ink-200); box-shadow: var(--shadow-md); overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 1.75rem 2rem 1.25rem;
+      border-bottom: 1px solid var(--ink-100);
+      background: linear-gradient(180deg, var(--ink-50) 0%, var(--surface) 100%);
+    }
+
+    .panel-title {
+      font-size: 1.65rem; font-weight: 800; letter-spacing: -0.03em;
+      color: var(--ink-900); display: flex; align-items: center; gap: 0.7rem;
+    }
+
+    .panel-title .title-icon {
+      width: 44px; height: 44px; border-radius: var(--radius-md);
+      background: var(--brand-50); color: var(--brand-500);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1.15rem; flex-shrink: 0; border: 1px solid var(--brand-100);
+    }
+
+    .panel-subtitle {
+      color: var(--ink-500); font-size: 0.92rem; font-weight: 500;
+      margin-top: 0.5rem; display: flex; align-items: center;
+      gap: 0.55rem; flex-wrap: wrap;
+    }
+    .panel-subtitle i { color: var(--brand-500); font-size: 0.85rem; }
+    .panel-subtitle .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--ink-300); display: inline-block; }
+
+    .panel-body { padding: 1.5rem 2rem 1.75rem; }
+
+    /* ==================== SEARCH BAR ==================== */
+    .search-bar {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+      margin-bottom: 1.5rem; background: var(--ink-50);
+      padding: 0.45rem 0.45rem 0.45rem 1.1rem;
+      border-radius: var(--radius-md); border: 1.5px solid var(--ink-200);
+      transition: var(--transition);
+    }
+    .search-bar:focus-within {
+      border-color: var(--brand-500); background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(26, 92, 255, 0.12);
+    }
+    .search-bar .search-icon { color: var(--brand-500); font-size: 1rem; display: flex; align-items: center; }
+
+    #searchInput {
+      flex: 1; border: none; outline: none; font-size: 0.98rem;
+      padding: 0.6rem 0.3rem; background: transparent; color: var(--ink-900);
+      font-weight: 600; font-family: inherit; min-width: 180px;
+    }
+    #searchInput::placeholder { color: var(--ink-400); font-weight: 500; font-size: 0.92rem; }
+
+    /* ==================== BUTTONS ==================== */
+    .btn {
+      background: var(--brand-500); border: none; color: #fff;
+      font-weight: 700; font-size: 0.88rem; padding: 0.68rem 1.3rem;
+      border-radius: var(--radius-sm); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      transition: var(--transition); font-family: inherit; white-space: nowrap;
+      box-shadow: 0 4px 12px -4px rgba(26, 92, 255, 0.5);
+    }
+    .btn:hover { background: var(--brand-600); transform: translateY(-1px); box-shadow: 0 8px 18px -6px rgba(26, 92, 255, 0.55); }
+    .btn:active { transform: translateY(0) scale(0.98); }
+
+    .btn-ghost {
+      background: var(--surface); color: var(--ink-600);
+      border: 1.5px solid var(--ink-200); box-shadow: none;
+    }
+    .btn-ghost:hover { background: var(--ink-50); color: var(--ink-900); border-color: var(--ink-300); box-shadow: var(--shadow-xs); }
+
+    .btn-success { background: var(--success-500); box-shadow: 0 4px 12px -4px rgba(14, 167, 106, 0.5); }
+    .btn-success:hover { background: #0a8a57; }
+
+    /* ==================== TABLE ==================== */
+    .table-wrap {
+      overflow-x: auto; border-radius: var(--radius-md);
+      border: 1px solid var(--ink-200); background: var(--surface);
+      -webkit-overflow-scrolling: touch;
+    }
+    .table-wrap::-webkit-scrollbar { height: 7px; }
+    .table-wrap::-webkit-scrollbar-track { background: transparent; }
+    .table-wrap::-webkit-scrollbar-thumb { background: var(--ink-300); border-radius: 4px; }
+    .table-wrap::-webkit-scrollbar-thumb:hover { background: var(--ink-400); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 1020px; }
+
+    thead th {
+      text-align: left; padding: 0.85rem 1rem; background: var(--ink-50);
+      color: var(--ink-600); font-weight: 700; font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      border-bottom: 1.5px solid var(--ink-200); white-space: nowrap;
+    }
+    thead th:first-child { padding-left: 1.35rem; }
+    thead th:last-child { padding-right: 1.35rem; text-align: center; }
+
+    tbody td {
+      padding: 0.85rem 1rem; color: var(--ink-700);
+      border-bottom: 1px solid var(--ink-100); font-weight: 500;
+      vertical-align: middle; transition: background 0.15s ease;
+    }
+    tbody td:first-child { padding-left: 1.35rem; }
+    tbody td:last-child { padding-right: 1.35rem; text-align: center; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: var(--brand-50); }
+
+    .emp-id {
+      font-family: 'SF Mono', 'Fira Code', monospace; font-weight: 700;
+      color: var(--brand-700); background: var(--brand-50);
+      padding: 0.28rem 0.65rem; border-radius: var(--radius-sm);
+      font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px;
+      letter-spacing: 0.02em; white-space: nowrap; border: 1px solid var(--brand-100);
+    }
+
+    .emp-name { font-weight: 700; color: var(--ink-900); font-size: 0.92rem; }
+
+    .tag {
+      display: inline-block; padding: 0.28rem 0.7rem; border-radius: var(--radius-sm);
+      font-size: 0.76rem; font-weight: 600; background: var(--brand-50);
+      color: var(--brand-700); white-space: nowrap; border: 1px solid var(--brand-100);
+    }
+
+    .tag-success {
+      background: var(--success-50); color: #0a7a4e; border-color: #c8f0dd;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .tag-success i { font-size: 0.65rem; opacity: 0.8; }
+
+    .tag-warning {
+      background: var(--warning-50); color: #a06d00; border-color: #f5e2a8;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+
+    .tag-danger {
+      background: var(--danger-50); color: #a01e3f; border-color: #f5c8d5;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+
+    .dept-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; font-weight: 600; color: var(--ink-600); white-space: nowrap;
+    }
+    .dept-tag i { color: var(--accent-500); font-size: 0.72rem; }
+
+    .salary-text {
+      font-weight: 800; color: #065c3b;
+      background: linear-gradient(135deg, #e6faf1 0%, #d4f5e6 100%);
+      padding: 0.28rem 0.7rem; border-radius: var(--radius-sm);
+      display: inline-block; font-size: 0.85rem;
+      border: 1px solid #b8ecd5; white-space: nowrap;
+    }
+
+    .btn-edit {
+      width: 34px; height: 34px; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--ink-200); background: var(--surface);
+      color: var(--ink-500); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; transition: var(--transition); position: relative;
+    }
+    .btn-edit:hover {
+      background: var(--brand-50); color: var(--brand-500);
+      border-color: var(--brand-500); transform: translateY(-1px);
+      box-shadow: 0 4px 10px -4px rgba(26, 92, 255, 0.45);
+    }
+    .btn-edit:active { transform: translateY(0) scale(0.95); }
+    .btn-edit::after {
+      content: 'Chỉnh sửa'; position: absolute; bottom: calc(100% + 6px);
+      left: 50%; transform: translateX(-50%) scale(0.9);
+      background: var(--ink-900); color: #fff; font-size: 0.7rem;
+      font-weight: 600; padding: 4px 8px; border-radius: 4px;
+      white-space: nowrap; opacity: 0; pointer-events: none; transition: var(--transition);
+    }
+    .btn-edit:hover::after { opacity: 1; transform: translateX(-50%) scale(1); }
+
+    /* Empty state */
+    .empty-row td { text-align: center; padding: 3rem 1rem; color: var(--ink-500); background: var(--ink-50); }
+    .empty-content { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; font-size: 0.92rem; }
+    .empty-content i { font-size: 2.2rem; color: var(--ink-300); }
+    .empty-content strong { color: var(--ink-800); }
+
+    /* ==================== PAGINATION ==================== */
+    .pagination-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      margin-top: 1.5rem; padding: 1rem 1.15rem;
+      background: var(--ink-50); border-radius: var(--radius-md);
+      border: 1px solid var(--ink-200);
+    }
+
+    .pagination-info {
+      font-size: 0.82rem; font-weight: 600; color: var(--ink-500);
+      display: inline-flex; align-items: center; gap: 6px;
+      white-space: nowrap;
+    }
+    .pagination-info strong { color: var(--ink-900); font-weight: 800; }
+
+    .pagination-controls {
+      display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;
+    }
+
+    .page-btn {
+      min-width: 36px; height: 36px; padding: 0 0.65rem;
+      border-radius: var(--radius-sm); border: 1.5px solid var(--ink-200);
+      background: var(--surface); color: var(--ink-600);
+      font-family: inherit; font-size: 0.84rem; font-weight: 700;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      gap: 5px; transition: var(--transition); white-space: nowrap;
+    }
+    .page-btn:hover:not(:disabled) {
+      background: var(--brand-50); color: var(--brand-500);
+      border-color: var(--brand-500); transform: translateY(-1px);
+      box-shadow: 0 4px 10px -4px rgba(26, 92, 255, 0.4);
+    }
+    .page-btn:active:not(:disabled) { transform: translateY(0) scale(0.95); }
+    .page-btn.active {
+      background: var(--brand-500); color: #fff; border-color: var(--brand-500);
+      box-shadow: 0 4px 12px -4px rgba(26, 92, 255, 0.55);
+    }
+    .page-btn.active:hover { transform: none; }
+    .page-btn:disabled {
+      opacity: 0.4; cursor: not-allowed; background: var(--ink-100);
+      border-color: var(--ink-200); color: var(--ink-400);
+    }
+
+    .page-ellipsis {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 28px; height: 36px; color: var(--ink-400);
+      font-weight: 700; font-size: 0.85rem;
+    }
+
+    /* Jump-to-page */
+    .jump-page {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.3rem 0.4rem 0.3rem 0.75rem;
+      background: var(--surface); border: 1.5px solid var(--ink-200);
+      border-radius: var(--radius-sm); transition: var(--transition);
+    }
+    .jump-page:focus-within { border-color: var(--brand-500); box-shadow: 0 0 0 3px rgba(26, 92, 255, 0.12); }
+    .jump-page label { font-size: 0.78rem; font-weight: 700; color: var(--ink-500); white-space: nowrap; }
+    .jump-page input {
+      width: 48px; border: none; outline: none; background: transparent;
+      font-family: inherit; font-size: 0.88rem; font-weight: 800;
+      color: var(--ink-900); text-align: center; padding: 0.2rem 0.15rem;
+    }
+    .jump-page input::-webkit-inner-spin-button,
+    .jump-page input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    .jump-page input[type=number] { -moz-appearance: textfield; }
+    .jump-page button {
+      width: 30px; height: 30px; border-radius: var(--radius-sm);
+      background: var(--brand-500); color: #fff; border: none;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; transition: var(--transition);
+    }
+    .jump-page button:hover { background: var(--brand-600); }
+
+    /* Table note */
+    .table-note {
+      margin-top: 1.25rem; display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 0.7rem;
+      color: var(--ink-500); font-size: 0.82rem; font-weight: 500;
+      padding: 0.75rem 1rem; background: var(--ink-50);
+      border-radius: var(--radius-sm); border: 1px dashed var(--ink-200);
+    }
+    .table-note span { display: inline-flex; align-items: center; gap: 7px; }
+    .table-note i { color: var(--brand-500); font-size: 0.8rem; }
+    .table-note strong { color: var(--ink-900); font-weight: 800; }
+
+    /* ==================== DETAIL PAGE ==================== */
+    .detail-hero-banner {
+      background: linear-gradient(135deg, var(--brand-700) 0%, var(--brand-500) 50%, #5b8dff 100%);
+      padding: 2rem; position: relative; overflow: hidden;
+    }
+    .detail-hero-banner::before {
+      content: ''; position: absolute; width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 107, 53, 0.35) 0%, transparent 70%);
+      top: -140px; right: -60px; pointer-events: none;
+    }
+    .detail-hero-banner::after {
+      content: ''; position: absolute; width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+      bottom: -100px; left: 30%; pointer-events: none;
+    }
+
+    .detail-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 1rem; flex-wrap: wrap; position: relative; z-index: 1;
+    }
+
+    .detail-hero { display: flex; align-items: center; gap: 1.15rem; flex-wrap: wrap; }
+
+    .avatar-lg {
+      width: 84px; height: 84px; border-radius: var(--radius-md);
+      background: linear-gradient(140deg, #fff 0%, #eef4ff 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--brand-700); font-weight: 900; font-size: 1.9rem;
+      letter-spacing: -1px; flex-shrink: 0;
+      box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.3);
+      border: 3px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .detail-name {
+      font-size: 1.65rem; font-weight: 800; letter-spacing: -0.03em;
+      color: #fff; line-height: 1.2;
+    }
+
+    .detail-role {
+      color: rgba(255, 255, 255, 0.88); font-size: 0.92rem;
+      font-weight: 600; margin-top: 5px;
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .detail-role i { font-size: 0.8rem; opacity: 0.85; }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255, 255, 255, 0.18); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3); color: #fff;
+      padding: 0.32rem 0.75rem; border-radius: var(--radius-sm);
+      font-size: 0.76rem; font-weight: 700; margin-top: 8px;
+    }
+    .status-badge .status-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #4ade80;
+      box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.3); animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.3); }
+      50% { box-shadow: 0 0 0 5px rgba(74, 222, 128, 0.15); }
+    }
+
+    .detail-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: flex-start; }
+
+    .btn-on-dark {
+      background: rgba(255, 255, 255, 0.16); color: #fff;
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(10px); box-shadow: none;
+    }
+    .btn-on-dark:hover {
+      background: rgba(255, 255, 255, 0.28); color: #fff;
+      border-color: rgba(255, 255, 255, 0.6); transform: translateY(-1px);
+    }
+
+    .btn-on-dark-solid {
+      background: #fff; color: var(--brand-700);
+      box-shadow: 0 8px 18px -6px rgba(0, 0, 0, 0.3);
+    }
+    .btn-on-dark-solid:hover { background: #f0f4ff; color: var(--brand-700); }
+
+    .detail-section { margin-bottom: 1.75rem; }
+    .detail-section:last-child { margin-bottom: 0; }
+
+    .section-heading {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.88rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--ink-700); margin-bottom: 1rem;
+      padding-bottom: 0.65rem; border-bottom: 1.5px solid var(--ink-100);
+    }
+
+    .section-heading .heading-icon {
+      width: 30px; height: 30px; border-radius: var(--radius-sm);
+      background: var(--brand-50); color: var(--brand-500);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; flex-shrink: 0;
+    }
+    .section-heading .heading-icon.accent { background: var(--accent-50); color: var(--accent-500); }
+    .section-heading .heading-icon.success { background: var(--success-50); color: var(--success-500); }
+    .section-heading .heading-icon.warning { background: var(--warning-50); color: var(--warning-500); }
+    .section-heading .heading-icon.danger { background: var(--danger-50); color: var(--danger-500); }
+
+    .detail-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .info-card {
+      background: var(--ink-50); border: 1px solid var(--ink-200);
+      border-radius: var(--radius-md); padding: 0.9rem 1rem; transition: var(--transition);
+    }
+    .info-card:hover { border-color: var(--brand-100); background: var(--surface); box-shadow: var(--shadow-sm); }
+    .info-card.full-width { grid-column: 1 / -1; }
+
+    .info-label {
+      font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--ink-400); margin-bottom: 0.35rem;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .info-label i { color: var(--brand-500); font-size: 0.68rem; }
+
+    .info-value {
+      font-size: 0.95rem; font-weight: 700; color: var(--ink-900);
+      word-break: break-word; line-height: 1.4;
+    }
+    .info-value.salary-value { color: #065c3b; font-size: 1.02rem; }
+    .info-value.muted { color: var(--ink-400); font-weight: 500; font-style: italic; }
+
+    .skill-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skill-chip {
+      display: inline-block; background: var(--brand-50); color: var(--brand-700);
+      border: 1px solid var(--brand-100); padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-sm); font-size: 0.76rem; font-weight: 600;
+    }
+
+    /* Tab navigation */
+    .tab-nav {
+      display: flex; gap: 0.25rem; padding: 0.4rem;
+      background: var(--ink-50); border-radius: var(--radius-md);
+      border: 1px solid var(--ink-200); margin-bottom: 1.5rem; overflow-x: auto;
+    }
+    .tab-nav::-webkit-scrollbar { height: 0; }
+
+    .tab-btn {
+      flex: 1; min-width: 100px; background: transparent; border: none;
+      padding: 0.6rem 0.9rem; border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 0.85rem; font-weight: 700;
+      color: var(--ink-500); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 7px; transition: var(--transition); white-space: nowrap;
+    }
+    .tab-btn i { font-size: 0.8rem; }
+    .tab-btn:hover { color: var(--ink-800); background: rgba(26, 92, 255, 0.06); }
+    .tab-btn.active {
+      background: var(--surface); color: var(--brand-600);
+      box-shadow: var(--shadow-sm); border: 1px solid var(--brand-100);
+    }
+
+    .tab-panel { display: none; animation: viewIn 0.25s ease-out; }
+    .tab-panel.active { display: block; }
+
+    /* ==================== EDIT FORM ==================== */
+    .edit-form {
+      background: var(--surface); border: 1.5px solid var(--brand-100);
+      border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm);
+    }
+
+    .edit-form-title {
+      font-size: 1rem; font-weight: 800; color: var(--ink-900);
+      margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;
+      padding-bottom: 0.85rem; border-bottom: 1px solid var(--ink-100);
+    }
+    .edit-form-title i { color: var(--brand-500); }
+
+    .form-section-title {
+      font-size: 0.78rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--ink-500);
+      margin: 1.35rem 0 0.75rem; padding-left: 0.6rem;
+      border-left: 3px solid var(--brand-500);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .form-section-title:first-of-type { margin-top: 0; }
+
+    .form-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.95rem;
+    }
+
+    .form-field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-field.full-width { grid-column: 1 / -1; }
+
+    .form-field label {
+      font-size: 0.74rem; font-weight: 700; color: var(--ink-600);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .form-field label .req { color: var(--danger-500); }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      color: var(--ink-900); padding: 0.6rem 0.8rem;
+      border: 1.5px solid var(--ink-200); border-radius: var(--radius-sm);
+      background: var(--ink-50); outline: none; transition: var(--transition); width: 100%;
+    }
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      border-color: var(--brand-500); background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(26, 92, 255, 0.12);
+    }
+    .form-field input:disabled { background: var(--ink-100); color: var(--ink-400); cursor: not-allowed; }
+    .form-field textarea { resize: vertical; min-height: 70px; }
+
+    .form-actions {
+      margin-top: 1.5rem; display: flex; gap: 0.6rem; flex-wrap: wrap;
+      padding-top: 1.15rem; border-top: 1px solid var(--ink-100);
+    }
+
+    /* ==================== FOOTER ==================== */
+    .site-footer {
+      max-width: 1360px; width: 100%; margin-top: 2rem;
+      background: linear-gradient(160deg, #0b1a30 0%, #081527 100%);
+      color: #c5d3e6; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: 2.25rem 2.25rem 1.5rem; position: relative; overflow: hidden;
+    }
+    .site-footer::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--brand-500) 0%, #5b8dff 45%, var(--accent-500) 100%);
+    }
+    .site-footer::after {
+      content: ''; position: absolute; width: 320px; height: 320px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(26, 92, 255, 0.18) 0%, transparent 70%);
+      top: -140px; right: -80px; pointer-events: none;
+    }
+
+    .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 2rem; position: relative; z-index: 1; }
+
+    .footer-logo { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.9rem; }
+    .footer-logo .brand-mark { width: 42px; height: 42px; font-size: 0.95rem; border-radius: var(--radius-sm); }
+    .footer-logo .brand-name { font-size: 1.2rem; -webkit-text-fill-color: #fff; background: none; color: #fff; }
+
+    .footer-brand p { font-size: 0.86rem; line-height: 1.7; color: #8ba1bd; max-width: 340px; }
+
+    .footer-heading {
+      font-size: 0.74rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.14em; color: #fff; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .footer-heading i { color: var(--accent-500); font-size: 0.8rem; }
+
+    .footer-contact-list { list-style: none; display: flex; flex-direction: column; gap: 0.85rem; }
+    .footer-contact-list li { display: flex; align-items: center; gap: 0.75rem; font-size: 0.88rem; font-weight: 500; }
+    .contact-icon {
+      width: 32px; height: 32px; border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--brand-500); font-size: 0.8rem; flex-shrink: 0; transition: var(--transition);
+    }
+    .footer-contact-list li:hover .contact-icon { background: var(--brand-500); color: #fff; border-color: var(--brand-500); }
+    .footer-contact-list a { color: #dbe7f5; text-decoration: none; transition: var(--transition); font-weight: 600; }
+    .footer-contact-list a:hover { color: var(--accent-500); }
+
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .footer-links a {
+      color: #8ba1bd; text-decoration: none; font-size: 0.86rem; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 8px; transition: var(--transition);
+    }
+    .footer-links a i { font-size: 0.55rem; color: var(--brand-500); transition: var(--transition); }
+    .footer-links a:hover { color: #fff; transform: translateX(3px); }
+    .footer-links a:hover i { color: var(--accent-500); }
+
+    .footer-bottom {
+      margin-top: 1.75rem; padding-top: 1.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem; position: relative; z-index: 1;
+    }
+    .footer-bottom p { font-size: 0.8rem; color: #6b82a0; }
+    .footer-bottom .heart { color: var(--accent-500); margin: 0 3px; }
+
+    .footer-socials { display: flex; gap: 0.5rem; }
+    .footer-socials a {
+      width: 32px; height: 32px; border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: #b0c3da; text-decoration: none; font-size: 0.8rem; transition: var(--transition);
+    }
+    .footer-socials a:hover { background: var(--brand-500); color: #fff; border-color: var(--brand-500); transform: translateY(-2px); }
+
+    /* ==================== TOAST ==================== */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--ink-900); color: #fff; padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-sm); font-size: 0.86rem; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: var(--shadow-lg); opacity: 0; pointer-events: none;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 9999;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast i { color: #4ade80; }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 900px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-brand { grid-column: span 2; }
+    }
+
+    @media (max-width: 768px) {
+      .pagination-bar {
+        flex-direction: column; align-items: stretch;
+        gap: 0.85rem; padding: 1rem;
+      }
+      .pagination-info { justify-content: center; }
+      .pagination-controls { justify-content: center; }
+      .jump-page { justify-content: center; }
+    }
+
+    @media (max-width: 700px) {
+      body { padding: 1rem 0.65rem 0; }
+
+      .brand-header { justify-content: center; gap: 0.75rem; }
+      .header-meta { width: 100%; justify-content: center; }
+
+      .panel-header { padding: 1.25rem 1.1rem 1rem; }
+      .panel-body { padding: 1.1rem 1.1rem 1.35rem; }
+      .panel-title { font-size: 1.25rem; gap: 0.55rem; }
+      .panel-title .title-icon { width: 36px; height: 36px; font-size: 0.95rem; border-radius: 8px; }
+      .panel-subtitle { font-size: 0.84rem; }
+
+      .search-bar { padding: 0.4rem 0.4rem 0.4rem 0.85rem; border-radius: 8px; }
+      #searchInput { font-size: 0.92rem; min-width: 130px; }
+      #searchInput::placeholder { font-size: 0.84rem; }
+      .btn { padding: 0.6rem 0.95rem; font-size: 0.82rem; flex: 1; min-width: 95px; }
+
+      /* Mobile table - chuyển sang dạng card */
+      .table-wrap {
+        border: none; background: transparent; overflow: visible;
+      }
+      table { min-width: 100%; display: block; }
+      thead { display: none; }
+      tbody { display: flex; flex-direction: column; gap: 0.75rem; }
+      tbody tr {
+        display: flex; flex-direction: column;
+        background: var(--surface); border: 1px solid var(--ink-200);
+        border-radius: var(--radius-md); padding: 0.85rem;
+        box-shadow: var(--shadow-xs); position: relative;
+      }
+      tbody tr:hover td { background: transparent; }
+      tbody tr:hover { border-color: var(--brand-100); box-shadow: var(--shadow-sm); }
+
+      tbody td {
+        padding: 0.28rem 0; border-bottom: none;
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 0.75rem; font-size: 0.84rem;
+      }
+      tbody td:first-child, tbody td:last-child { padding-left: 0; padding-right: 0; }
+      tbody td::before {
+        content: attr(data-label);
+        font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
+        letter-spacing: 0.08em; color: var(--ink-400);
+        flex-shrink: 0;
+      }
+      tbody td:last-child {
+        justify-content: flex-end; padding-top: 0.5rem;
+        margin-top: 0.35rem; border-top: 1px dashed var(--ink-200);
+      }
+      tbody td:last-child::before { display: none; }
+      .btn-edit::after { display: none; }
+
+      .empty-row { padding: 0; }
+      .empty-row td {
+        display: block; text-align: center; padding: 2.5rem 1rem;
+        background: var(--ink-50); border-radius: var(--radius-md); border: 1px solid var(--ink-200);
+      }
+      .empty-row td::before { display: none; }
+
+      /* Pagination mobile */
+      .pagination-controls { gap: 0.3rem; }
+      .page-btn { min-width: 32px; height: 32px; font-size: 0.78rem; padding: 0 0.5rem; }
+      .page-ellipsis { min-width: 22px; font-size: 0.78rem; }
+      .pagination-info { font-size: 0.78rem; }
+      .jump-page { padding: 0.25rem 0.35rem 0.25rem 0.65rem; }
+      .jump-page label { font-size: 0.74rem; }
+      .jump-page input { width: 42px; font-size: 0.84rem; }
+      .jump-page button { width: 28px; height: 28px; font-size: 0.72rem; }
+
+      /* Detail mobile */
+      .detail-hero-banner { padding: 1.35rem 1.1rem; }
+      .detail-header { flex-direction: column; }
+      .detail-actions { width: 100%; }
+      .detail-actions .btn { flex: 1; }
+      .avatar-lg { width: 62px; height: 62px; font-size: 1.35rem; border-width: 2px; }
+      .detail-name { font-size: 1.25rem; }
+      .detail-role { font-size: 0.84rem; }
+      .status-badge { font-size: 0.72rem; padding: 0.28rem 0.65rem; }
+
+      .tab-nav { padding: 0.3rem; border-radius: 8px; }
+      .tab-btn { padding: 0.48rem 0.6rem; font-size: 0.75rem; min-width: 80px; gap: 5px; }
+      .tab-btn i { font-size: 0.72rem; }
+
+      .detail-grid { grid-template-columns: 1fr; gap: 0.65rem; }
+      .info-card { padding: 0.78rem 0.85rem; }
+      .info-label { font-size: 0.64rem; }
+      .info-value { font-size: 0.88rem; }
+      .info-value.salary-value { font-size: 0.95rem; }
+
+      .section-heading { font-size: 0.8rem; margin-bottom: 0.8rem; }
+      .section-heading .heading-icon { width: 26px; height: 26px; font-size: 0.72rem; }
+
+      .edit-form { padding: 1.1rem; }
+      .edit-form-title { font-size: 0.92rem; }
+      .form-section-title { font-size: 0.72rem; margin: 1.15rem 0 0.65rem; }
+      .form-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+      .form-field label { font-size: 0.7rem; }
+      .form-field input, .form-field select, .form-field textarea { font-size: 0.86rem; padding: 0.55rem 0.7rem; }
+      .form-actions { flex-direction: column; }
+      .form-actions .btn { width: 100%; }
+
+      /* Footer mobile */
+      .site-footer { padding: 1.65rem 1.15rem 1.15rem; border-radius: 12px 12px 0 0; }
+      .footer-grid { grid-template-columns: 1fr; gap: 1.4rem; }
+      .footer-brand { grid-column: span 1; }
+      .footer-brand p { max-width: 100%; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+
+      .table-note { flex-direction: column; align-items: flex-start; font-size: 0.78rem; }
+    }
+
+    @media (max-width: 420px) {
+      .brand-name { font-size: 1.2rem; }
+      .brand-mark { width: 42px; height: 42px; font-size: 0.95rem; }
+      .brand-tagline { font-size: 0.6rem; }
+      .meta-chip { font-size: 0.72rem; padding: 0.4rem 0.7rem; }
+
+      .panel-title { font-size: 1.12rem; }
+      .panel-title .title-icon { width: 32px; height: 32px; font-size: 0.85rem; }
+
+      .page-btn { min-width: 30px; height: 30px; font-size: 0.74rem; }
+      .jump-page input { width: 36px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="brand-header">
+    <a href="#" class="brand-logo" aria-label="HMB Agency">
+      <div class="brand-mark">HMB</div>
+      <div class="brand-text-block">
+        <span class="brand-name">HMB Agency</span>
+        <span class="brand-tagline">People · Culture · Growth</span>
+      </div>
+    </a>
+    <div class="header-meta">
+      <span class="meta-chip"><i class="fas fa-headset"></i> 0855 555 140</span>
+      <span class="meta-chip"><i class="fas fa-envelope"></i> hmb.agency.group@gmail.com</span>
+    </div>
+  </header>
+
+  <!-- ==================== VIEW 1: DANH SÁCH ==================== -->
+  <div id="listView" class="view active">
+    <main class="panel">
+      <div class="panel-header">
+        <h1 class="panel-title">
+          <span class="title-icon"><i class="fas fa-users-gear"></i></span>
+          Quản lý nhân viên
+        </h1>
+        <div class="panel-subtitle">
+          <i class="fas fa-id-card"></i>
+          <span>Tra cứu thông tin theo mã nhân viên</span>
+          <span class="dot"></span>
+          <span>HMB Agency</span>
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <div class="search-bar">
+          <span class="search-icon"><i class="fas fa-magnifying-glass"></i></span>
+          <input type="text" id="searchInput" placeholder="Nhập mã nhân viên (VD: NV001, NV002...)" autocomplete="off" aria-label="Mã nhân viên">
+          <button class="btn" id="searchBtn"><i class="fas fa-magnifying-glass"></i> Tra cứu</button>
+          <button class="btn btn-ghost" id="resetBtn"><i class="fas fa-rotate-left"></i> Tất cả</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã NV</th>
+                <th>Họ và tên</th>
+                <th>Chức vụ</th>
+                <th>Lương (VNĐ)</th>
+                <th>Vị trí</th>
+                <th>Phòng ban</th>
+                <th>Trạng thái</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="employeeTableBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-bar">
+          <div class="pagination-info">
+            <i class="fas fa-list"></i>
+            Hiển thị <strong id="showingFrom">1</strong>–<strong id="showingTo">10</strong>
+            / <strong id="totalRecords">15</strong> nhân viên
+          </div>
+
+          <div class="pagination-controls" id="paginationControls">
+            <!-- Render bằng JS -->
+          </div>
+
+          <div class="jump-page">
+            <label for="jumpInput">Đến trang</label>
+            <input type="number" id="jumpInput" min="1" placeholder="#">
+            <button id="jumpBtn" aria-label="Đi đến trang"><i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <div class="table-note">
+          <span><i class="fas fa-database"></i> Tổng số nhân viên: <strong id="totalCount">15</strong></span>
+          <span><i class="fas fa-lightbulb"></i> Nhấn <i class="fas fa-pen-to-square" style="color:var(--brand-500);"></i> để xem &amp; chỉnh sửa chi tiết</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==================== VIEW 2: CHI TIẾT NHÂN VIÊN ==================== -->
+  <div id="detailView" class="view">
+    <main class="panel">
+      <div class="detail-hero-banner">
+        <div class="detail-header">
+          <div class="detail-hero">
+            <div class="avatar-lg" id="detailAvatar">NV</div>
+            <div>
+              <div class="detail-name" id="detailName">—</div>
+              <div class="detail-role">
+                <i class="fas fa-briefcase"></i>
+                <span id="detailRole">—</span>
+              </div>
+              <div class="status-badge" id="detailStatusBadge">
+                <span class="status-dot"></span>
+                <span id="detailStatusText">Đang làm việc</span>
+              </div>
+            </div>
+          </div>
+          <div class="detail-actions">
+            <button class="btn btn-on-dark" id="backBtn"><i class="fas fa-arrow-left"></i> Quay lại</button>
+            <button class="btn btn-on-dark-solid" id="scrollToEditBtn"><i class="fas fa-pen-to-square"></i> Chỉnh sửa</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <div class="tab-nav" role="tablist">
+          <button class="tab-btn active" data-tab="overview"><i class="fas fa-user"></i> Cá nhân</button>
+          <button class="tab-btn" data-tab="work"><i class="fas fa-briefcase"></i> Công việc</button>
+          <button class="tab-btn" data-tab="contact"><i class="fas fa-address-book"></i> Liên hệ</button>
+          <button class="tab-btn" data-tab="salary"><i class="fas fa-money-bill-wave"></i> Lương</button>
+          <button class="tab-btn" data-tab="education"><i class="fas fa-graduation-cap"></i> Học vấn</button>
+        </div>
+
+        <!-- TAB: Cá nhân -->
+        <div class="tab-panel active" data-tab-panel="overview">
+          <div class="detail-section">
+            <div class="section-heading">
+              <span class="heading-icon"><i class="fas fa-user"></i></span>
+              Thông tin cá nhân
+            </div>
+            <div class="detail-grid">
+              <div class="info-card"><div class="info-label"><i class="fas fa-id-badge"></i> Mã nhân viên</div><div class="info-value" id="infoId">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-user"></i> Họ và tên</div><div class="info-value" id="infoName">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-cake-candles"></i> Ngày sinh</div><div class="info-value" id="infoDob">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-venus-mars"></i> Giới tính</div><div class="info-value" id="infoGender">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-id-card"></i> CMND/CCCD</div><div class="info-value" id="infoCccd">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-heart"></i> Tình trạng hôn nhân</div><div class="info-value" id="infoMarital">—</div></div>
+              <div class="info-card full-width"><div class="info-label"><i class="fas fa-house"></i> Địa chỉ thường trú</div><div class="info-value" id="infoAddress">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Công việc -->
+        <div class="tab-panel" data-tab-panel="work">
+          <div class="detail-section">
+            <div class="section-heading">
+              <span class="heading-icon accent"><i class="fas fa-briefcase"></i></span>
+              Thông tin công việc
+            </div>
+            <div class="detail-grid">
+              <div class="info-card"><div class="info-label"><i class="fas fa-briefcase"></i> Chức vụ</div><div class="info-value" id="infoPosition">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-building"></i> Phòng ban</div><div class="info-value" id="infoDepartment">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-location-dot"></i> Vị trí</div><div class="info-value" id="infoLocation">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-layer-group"></i> Cấp bậc</div><div class="info-value" id="infoLevel">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-calendar-check"></i> Ngày vào làm</div><div class="info-value" id="infoStartDate">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-hourglass-half"></i> Thâm niên</div><div class="info-value" id="infoSeniority">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-file-signature"></i> Loại hợp đồng</div><div class="info-value" id="infoContractType">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-user-tie"></i> Quản lý trực tiếp</div><div class="info-value" id="infoManager">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-toggle-on"></i> Trạng thái</div><div class="info-value" id="infoStatus">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Liên hệ -->
+        <div class="tab-panel" data-tab-panel="contact">
+          <div class="detail-section">
+            <div class="section-heading">
+              <span class="heading-icon success"><i class="fas fa-address-book"></i></span>
+              Thông tin liên hệ
+            </div>
+            <div class="detail-grid">
+              <div class="info-card"><div class="info-label"><i class="fas fa-phone"></i> Số điện thoại</div><div class="info-value" id="infoPhone">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-envelope"></i> Email công ty</div><div class="info-value" id="infoEmailCompany">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-envelope-open"></i> Email cá nhân</div><div class="info-value" id="infoEmailPersonal">—</div></div>
+            </div>
+          </div>
+          <div class="detail-section">
+            <div class="section-heading">
+              <span class="heading-icon danger"><i class="fas fa-triangle-exclamation"></i></span>
+              Liên hệ khẩn cấp
+            </div>
+            <div class="detail-grid">
+              <div class="info-card"><div class="info-label"><i class="fas fa-user"></i> Người liên hệ</div><div class="info-value" id="infoEmergencyName">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-people-arrows"></i> Quan hệ</div><div class="info-value" id="infoEmergencyRelation">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-phone-volume"></i> Số điện thoại</div><div class="info-value" id="infoEmergencyPhone">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Lương -->
+        <div class="tab-panel" data-tab-panel="salary">
+          <div class="detail-section">
+            <div class="section-heading">
+              <span class="heading-icon success"><i class="fas fa-money-bill-wave"></i></span>
+              Lương &amp; Phúc lợi
+            </div>
+            <div class="detail-grid">
+              <div class="info-card"><div class="info-label"><i class="fas fa-money-bill-wave"></i> Lương cơ bản</div><div class="info-value salary-value" id="infoSalary">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-coins"></i> Phụ cấp</div><div class="info-value" id="infoAllowance">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-award"></i> Thưởng KPI</div><div class="info-value" id="infoBonus">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-umbrella-beach"></i> Phép năm còn lại</div><div class="info-value" id="infoLeaveDays">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-shield-halved"></i> Bảo hiểm</div><div class="info-value" id="infoInsurance">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-building-columns"></i> Ngân hàng nhận lương</div><div class="info-value" id="infoBank">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Học vấn -->
+        <div class="tab-panel" data-tab-panel="education">
+          <div class="detail-section">
+            <div class="section-heading">
+              <span class="heading-icon warning"><i class="fas fa-graduation-cap"></i></span>
+              Học vấn
+            </div>
+            <div class="detail-grid">
+              <div class="info-card"><div class="info-label"><i class="fas fa-graduation-cap"></i> Trình độ</div><div class="info-value" id="infoEducationLevel">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-book"></i> Chuyên ngành</div><div class="info-value" id="infoMajor">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-school"></i> Trường tốt nghiệp</div><div class="info-value" id="infoSchool">—</div></div>
+              <div class="info-card"><div class="info-label"><i class="fas fa-calendar"></i> Năm tốt nghiệp</div><div class="info-value" id="infoGraduationYear">—</div></div>
+            </div>
+          </div>
+          <div class="detail-section">
+            <div class="section-heading">
+              <span class="heading-icon"><i class="fas fa-certificate"></i></span>
+              Chứng chỉ
+            </div>
+            <div class="detail-grid">
+              <div class="info-card full-width"><div class="info-label"><i class="fas fa-certificate"></i> Danh sách chứng chỉ</div><div class="info-value" id="infoCertificates">—</div></div>
+            </div>
+          </div>
+          <div class="detail-section">
+            <div class="section-heading">
+              <span class="heading-icon accent"><i class="fas fa-code"></i></span>
+              Kỹ năng &amp; Ngoại ngữ
+            </div>
+            <div class="detail-grid">
+              <div class="info-card full-width"><div class="info-label"><i class="fas fa-code"></i> Kỹ năng chính</div><div class="info-value" id="infoSkills">—</div></div>
+              <div class="info-card full-width"><div class="info-label"><i class="fas fa-language"></i> Ngoại ngữ</div><div class="info-value" id="infoLanguages">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== EDIT FORM ==================== -->
+        <div class="edit-form" id="editFormWrapper" style="margin-top:1.75rem;">
+          <div class="edit-form-title">
+            <i class="fas fa-pen-to-square"></i>
+            Chỉnh sửa thông tin nhân viên
+          </div>
+          <form id="editForm">
+            <div class="form-section-title"><i class="fas fa-user"></i> Thông tin cá nhân</div>
+            <div class="form-grid">
+              <div class="form-field"><label>Mã nhân viên</label><input type="text" id="editId" disabled></div>
+              <div class="form-field"><label>Họ và tên <span class="req">*</span></label><input type="text" id="editName" required></div>
+              <div class="form-field"><label>Ngày sinh</label><input type="date" id="editDob"></div>
+              <div class="form-field"><label>Giới tính</label>
+                <select id="editGender">
+                  <option value="">-- Chọn --</option>
+                  <option value="Nam">Nam</option>
+                  <option value="Nữ">Nữ</option>
+                  <option value="Khác">Khác</option>
+                </select>
+              </div>
+              <div class="form-field"><label>CMND/CCCD</label><input type="text" id="editCccd"></div>
+              <div class="form-field"><label>Tình trạng hôn nhân</label>
+                <select id="editMarital">
+                  <option value="">-- Chọn --</option>
+                  <option value="Độc thân">Độc thân</option>
+                  <option value="Đã kết hôn">Đã kết hôn</option>
+                  <option value="Ly hôn">Ly hôn</option>
+                </select>
+              </div>
+              <div class="form-field full-width"><label>Địa chỉ thường trú</label><input type="text" id="editAddress"></div>
+            </div>
+
+            <div class="form-section-title"><i class="fas fa-briefcase"></i> Thông tin công việc</div>
+            <div class="form-grid">
+              <div class="form-field"><label>Chức vụ <span class="req">*</span></label><input type="text" id="editPosition" required></div>
+              <div class="form-field"><label>Phòng ban <span class="req">*</span></label><input type="text" id="editDepartment" required></div>
+              <div class="form-field"><label>Vị trí <span class="req">*</span></label><input type="text" id="editLocation" required></div>
+              <div class="form-field"><label>Cấp bậc</label>
+                <select id="editLevel">
+                  <option value="">-- Chọn --</option>
+                  <option value="Intern">Intern</option>
+                  <option value="Junior">Junior</option>
+                  <option value="Middle">Middle</option>
+                  <option value="Senior">Senior</option>
+                  <option value="Manager">Manager</option>
+                  <option value="Director">Director</option>
+                </select>
+              </div>
+              <div class="form-field"><label>Ngày vào làm</label><input type="date" id="editStartDate"></div>
+              <div class="form-field"><label>Loại hợp đồng</label>
+                <select id="editContractType">
+                  <option value="">-- Chọn --</option>
+                  <option value="Thử việc">Thử việc</option>
+                  <option value="Chính thức">Chính thức</option>
+                  <option value="Thời vụ">Thời vụ</option>
+                  <option value="Cộng tác viên">Cộng tác viên</option>
+                </select>
+              </div>
+              <div class="form-field"><label>Quản lý trực tiếp</label><input type="text" id="editManager"></div>
+              <div class="form-field"><label>Trạng thái</label>
+                <select id="editStatus">
+                  <option value="Đang làm việc">Đang làm việc</option>
+                  <option value="Tạm nghỉ">Tạm nghỉ</option>
+                  <option value="Đã nghỉ">Đã nghỉ</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-section-title"><i class="fas fa-address-book"></i> Liên hệ</div>
+            <div class="form-grid">
+              <div class="form-field"><label>Số điện thoại</label><input type="tel" id="editPhone"></div>
+              <div class="form-field"><label>Email công ty</label><input type="email" id="editEmailCompany"></div>
+              <div class="form-field"><label>Email cá nhân</label><input type="email" id="editEmailPersonal"></div>
+              <div class="form-field"><label>Người liên hệ khẩn cấp</label><input type="text" id="editEmergencyName"></div>
+              <div class="form-field"><label>Quan hệ</label><input type="text" id="editEmergencyRelation"></div>
+              <div class="form-field"><label>SĐT người liên hệ</label><input type="tel" id="editEmergencyPhone"></div>
+            </div>
+
+            <div class="form-section-title"><i class="fas fa-money-bill-wave"></i> Lương &amp; Phúc lợi</div>
+            <div class="form-grid">
+              <div class="form-field"><label>Lương cơ bản (VNĐ) <span class="req">*</span></label><input type="number" id="editSalary" min="0" step="500000" required></div>
+              <div class="form-field"><label>Phụ cấp (VNĐ)</label><input type="number" id="editAllowance" min="0" step="100000"></div>
+              <div class="form-field"><label>Thưởng KPI (VNĐ)</label><input type="number" id="editBonus" min="0" step="100000"></div>
+              <div class="form-field"><label>Phép năm còn lại (ngày)</label><input type="number" id="editLeaveDays" min="0" step="1"></div>
+              <div class="form-field"><label>Bảo hiểm</label><input type="text" id="editInsurance" placeholder="VD: BHXH, BHYT, BHTN"></div>
+              <div class="form-field"><label>Ngân hàng nhận lương</label><input type="text" id="editBank" placeholder="VD: Vietcombank - ****1234"></div>
+            </div>
+
+            <div class="form-section-title"><i class="fas fa-graduation-cap"></i> Học vấn &amp; Kỹ năng</div>
+            <div class="form-grid">
+              <div class="form-field"><label>Trình độ</label>
+                <select id="editEducationLevel">
+                  <option value="">-- Chọn --</option>
+                  <option value="Trung cấp">Trung cấp</option>
+                  <option value="Cao đẳng">Cao đẳng</option>
+                  <option value="Đại học">Đại học</option>
+                  <option value="Thạc sĩ">Thạc sĩ</option>
+                  <option value="Tiến sĩ">Tiến sĩ</option>
+                </select>
+              </div>
+              <div class="form-field"><label>Chuyên ngành</label><input type="text" id="editMajor"></div>
+              <div class="form-field"><label>Trường tốt nghiệp</label><input type="text" id="editSchool"></div>
+              <div class="form-field"><label>Năm tốt nghiệp</label><input type="number" id="editGraduationYear" min="1950" max="2100"></div>
+              <div class="form-field full-width"><label>Chứng chỉ (cách nhau bởi dấu phẩy)</label><input type="text" id="editCertificates" placeholder="VD: TOEIC 850, PMP, AWS Certified"></div>
+              <div class="form-field full-width"><label>Kỹ năng chính (cách nhau bởi dấu phẩy)</label><input type="text" id="editSkills" placeholder="VD: React, Node.js, Sales, Leadership"></div>
+              <div class="form-field full-width"><label>Ngoại ngữ (cách nhau bởi dấu phẩy)</label><input type="text" id="editLanguages" placeholder="VD: Tiếng Anh B2, Tiếng Nhật N3"></div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-success"><i class="fas fa-floppy-disk"></i> Lưu thay đổi</button>
+              <button type="button" class="btn btn-ghost" id="cancelEditBtn"><i class="fas fa-xmark"></i> Hủy</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="brand-mark">HMB</div>
+          <div class="brand-text-block">
+            <span class="brand-name" style="color:#fff; -webkit-text-fill-color:#fff;">HMB Agency</span>
+            <span class="brand-tagline" style="color:#6b82a0;">People · Culture · Growth</span>
+          </div>
+        </div>
+        <p>
+          HMB Agency – Đối tác chiến lược về nhân sự và phát triển đội ngũ.
+          Chúng tôi kết nối con người, nuôi dưỡng văn hóa và kiến tạo giá trị bền vững.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="footer-heading"><i class="fas fa-address-card"></i> Liên hệ</h4>
+        <ul class="footer-contact-list">
+          <li><span class="contact-icon"><i class="fas fa-phone"></i></span><a href="tel:0855555140">0855 555 140</a></li>
+          <li><span class="contact-icon"><i class="fas fa-envelope"></i></span><a href="mailto:hmb.agency.group@gmail.com">hmb.agency.group@gmail.com</a></li>
+          <li><span class="contact-icon"><i class="fas fa-location-dot"></i></span><span>Hà Nội · TP. Hồ Chí Minh</span></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="footer-heading"><i class="fas fa-compass"></i> Liên kết nhanh</h4>
+        <ul class="footer-links">
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Trang chủ</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Giới thiệu</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Dịch vụ nhân sự</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Tuyển dụng</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right"></i> Liên hệ hợp tác</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2025 <strong style="color:#e2ecf9;">HMB Agency</strong>. Made with <span class="heart">♥</span> for our people.</p>
+      <div class="footer-socials">
+        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" aria-label="Zalo"><i class="fas fa-comment-dots"></i></a>
+        <a href="mailto:hmb.agency.group@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><i class="fas fa-circle-check"></i><span id="toastMsg">Đã lưu thay đổi</span></div>
+
+<script>
+  (function() {
+    // ==================== DỮ LIỆU 15 NHÂN VIÊN ====================
+    const employees = [
+      { id: 'NV001', name: 'Nguyễn Văn An',   position: 'Trưởng phòng',          salary: 28000000, location: 'Hà Nội',          department: 'Kinh doanh',        status: 'Đang làm việc', dob: '1990-03-15', gender: 'Nam', cccd: '001090012345', marital: 'Đã kết hôn', address: '123 Nguyễn Trãi, Thanh Xuân, Hà Nội', level: 'Manager', startDate: '2021-06-01', contractType: 'Chính thức', manager: 'Trần Văn Bình', phone: '0912 345 678', emailCompany: 'an.nguyen@hmb.agency', emailPersonal: 'annguyen@gmail.com', emergencyName: 'Nguyễn Thị Hoa', emergencyRelation: 'Vợ', emergencyPhone: '0912 345 679', allowance: 3000000, bonus: 5000000, leaveDays: 12, insurance: 'BHXH, BHYT, BHTN', bank: 'Vietcombank - ****1234', educationLevel: 'Đại học', major: 'Quản trị Kinh doanh', school: 'Đại học Kinh tế Quốc dân', graduationYear: 2012, certificates: 'TOEIC 850, PMP', skills: 'Sales, Leadership, Negotiation, CRM', languages: 'Tiếng Anh C1, Tiếng Nhật N4' },
+      { id: 'NV002', name: 'Trần Thị Bích',   position: 'Chuyên viên Nhân sự',   salary: 18500000, location: 'TP. Hồ Chí Minh', department: 'Nhân sự',           status: 'Đang làm việc', dob: '1995-07-22', gender: 'Nữ', cccd: '079195023456', marital: 'Độc thân', address: '45 Lê Lợi, Quận 1, TP. Hồ Chí Minh', level: 'Middle', startDate: '2022-03-15', contractType: 'Chính thức', manager: 'Lê Thị Hồng', phone: '0987 654 321', emailCompany: 'bich.tran@hmb.agency', emailPersonal: 'bichtran95@gmail.com', emergencyName: 'Trần Văn Minh', emergencyRelation: 'Bố', emergencyPhone: '0987 111 222', allowance: 2000000, bonus: 3000000, leaveDays: 10, insurance: 'BHXH, BHYT, BHTN', bank: 'Techcombank - ****5678', educationLevel: 'Đại học', major: 'Quản trị Nhân lực', school: 'Đại học Kinh tế TP.HCM', graduationYear: 2017, certificates: 'TOEIC 750, Chứng chỉ HR', skills: 'Recruitment, C&B, HRIS, Communication', languages: 'Tiếng Anh B2' },
+      { id: 'NV003', name: 'Lê Hoàng Cường',  position: 'Kỹ sư phần mềm',        salary: 32000000, location: 'Đà Nẵng',         department: 'Công nghệ thông tin', status: 'Đang làm việc', dob: '1992-11-08', gender: 'Nam', cccd: '048092034567', marital: 'Đã kết hôn', address: '78 Bạch Đằng, Hải Châu, Đà Nẵng', level: 'Senior', startDate: '2020-09-01', contractType: 'Chính thức', manager: 'Phạm Văn Khoa', phone: '0905 123 456', emailCompany: 'cuong.le@hmb.agency', emailPersonal: 'cuongle.dev@gmail.com', emergencyName: 'Lê Thị Lan', emergencyRelation: 'Vợ', emergencyPhone: '0905 123 457', allowance: 2500000, bonus: 8000000, leaveDays: 14, insurance: 'BHXH, BHYT, BHTN', bank: 'BIDV - ****9012', educationLevel: 'Đại học', major: 'Công nghệ Phần mềm', school: 'Đại học Bách Khoa Đà Nẵng', graduationYear: 2014, certificates: 'AWS Certified, Scrum Master', skills: 'React, Node.js, TypeScript, AWS, Docker', languages: 'Tiếng Anh B2' },
+      { id: 'NV004', name: 'Phạm Thu Dung',   position: 'Kế toán tổng hợp',      salary: 16500000, location: 'Hà Nội',          department: 'Tài chính - Kế toán', status: 'Đang làm việc', dob: '1993-05-18', gender: 'Nữ', cccd: '001093045678', marital: 'Độc thân', address: '90 Trần Duy Hưng, Cầu Giấy, Hà Nội', level: 'Middle', startDate: '2021-01-11', contractType: 'Chính thức', manager: 'Nguyễn Thị Thu', phone: '0936 789 012', emailCompany: 'dung.pham@hmb.agency', emailPersonal: 'dungpham93@gmail.com', emergencyName: 'Phạm Văn Hùng', emergencyRelation: 'Bố', emergencyPhone: '0936 789 013', allowance: 1500000, bonus: 2000000, leaveDays: 11, insurance: 'BHXH, BHYT, BHTN', bank: 'Agribank - ****3456', educationLevel: 'Đại học', major: 'Kế toán', school: 'Học viện Tài chính', graduationYear: 2015, certificates: 'CPA, Chứng chỉ Kế toán trưởng', skills: 'Kế toán, Thuế, Excel, MISA', languages: 'Tiếng Anh B1' },
+      { id: 'NV005', name: 'Vũ Minh Đức',     position: 'Giám đốc dự án',        salary: 45000000, location: 'TP. Hồ Chí Minh', department: 'Quản lý dự án',      status: 'Đang làm việc', dob: '1985-12-03', gender: 'Nam', cccd: '079085056789', marital: 'Đã kết hôn', address: '200 Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh', level: 'Director', startDate: '2018-04-01', contractType: 'Chính thức', manager: 'Ban Giám đốc', phone: '0918 222 333', emailCompany: 'duc.vu@hmb.agency', emailPersonal: 'ducvu85@gmail.com', emergencyName: 'Vũ Thị Mai', emergencyRelation: 'Vợ', emergencyPhone: '0918 222 334', allowance: 5000000, bonus: 15000000, leaveDays: 18, insurance: 'BHXH, BHYT, BHTN, Bảo hiểm sức khỏe cao cấp', bank: 'Vietcombank - ****7890', educationLevel: 'Thạc sĩ', major: 'Quản lý Dự án', school: 'Đại học Quốc tế - ĐHQG TP.HCM', graduationYear: 2012, certificates: 'PMP, Prince2, MBA', skills: 'Project Management, Agile, Leadership, Stakeholder Management', languages: 'Tiếng Anh C2, Tiếng Pháp A2' },
+      { id: 'NV006', name: 'Đặng Thị Mai',    position: 'Chuyên viên Marketing', salary: 19500000, location: 'Hải Phòng',       department: 'Marketing',         status: 'Đang làm việc', dob: '1996-09-14', gender: 'Nữ', cccd: '031196067890', marital: 'Độc thân', address: '12 Lạch Tray, Ngô Quyền, Hải Phòng', level: 'Junior', startDate: '2023-02-20', contractType: 'Chính thức', manager: 'Trần Văn Nam', phone: '0977 888 999', emailCompany: 'mai.dang@hmb.agency', emailPersonal: 'maidang96@gmail.com', emergencyName: 'Đặng Văn Tuấn', emergencyRelation: 'Bố', emergencyPhone: '0977 888 100', allowance: 1200000, bonus: 2500000, leaveDays: 8, insurance: 'BHXH, BHYT, BHTN', bank: 'MB Bank - ****2345', educationLevel: 'Đại học', major: 'Marketing', school: 'Đại học Thương mại', graduationYear: 2018, certificates: 'Google Ads, Facebook Blueprint, HubSpot', skills: 'SEO, Content, Social Media, Google Analytics', languages: 'Tiếng Anh B2, Tiếng Hàn A1' },
+      { id: 'NV007', name: 'Bùi Quốc Bảo',    position: 'Nhân viên hỗ trợ IT',   salary: 14000000, location: 'Cần Thơ',         department: 'Hỗ trợ kỹ thuật',   status: 'Tạm nghỉ',      dob: '1998-01-30', gender: 'Nam', cccd: '065198078901', marital: 'Độc thân', address: '56 Hòa Bình, Ninh Kiều, Cần Thơ', level: 'Junior', startDate: '2023-08-01', contractType: 'Thử việc', manager: 'Lý Văn Tài', phone: '0901 234 567', emailCompany: 'bao.bui@hmb.agency', emailPersonal: 'baobui98@gmail.com', emergencyName: 'Bùi Thị Hạnh', emergencyRelation: 'Mẹ', emergencyPhone: '0901 234 568', allowance: 1000000, bonus: 1000000, leaveDays: 5, insurance: 'BHXH, BHYT, BHTN', bank: 'Sacombank - ****6789', educationLevel: 'Cao đẳng', major: 'Công nghệ Thông tin', school: 'Cao đẳng Nghề Cần Thơ', graduationYear: 2020, certificates: 'CCNA, MCSA', skills: 'Windows Server, Network, Helpdesk, Troubleshooting', languages: 'Tiếng Anh A2' },
+      { id: 'NV008', name: 'Hoàng Thị Ngọc',  position: 'Trưởng nhóm CSKH',      salary: 21000000, location: 'Hà Nội',          department: 'Chăm sóc khách hàng', status: 'Đang làm việc', dob: '1991-04-25', gender: 'Nữ', cccd: '001091089012', marital: 'Đã kết hôn', address: '34 Kim Mã, Ba Đình, Hà Nội', level: 'Senior', startDate: '2019-11-05', contractType: 'Chính thức', manager: 'Nguyễn Văn An', phone: '0945 678 901', emailCompany: 'ngoc.hoang@hmb.agency', emailPersonal: 'ngochoang91@gmail.com', emergencyName: 'Hoàng Văn Long', emergencyRelation: 'Chồng', emergencyPhone: '0945 678 902', allowance: 2000000, bonus: 4000000, leaveDays: 13, insurance: 'BHXH, BHYT, BHTN', bank: 'ACB - ****8901', educationLevel: 'Đại học', major: 'Quản trị Kinh doanh', school: 'Đại học Thương mại', graduationYear: 2013, certificates: 'Customer Service Excellence, CRM', skills: 'Customer Care, Team Management, CRM, Communication', languages: 'Tiếng Anh B2' },
+      { id: 'NV009', name: 'Đỗ Văn Hùng',     position: 'Nhân viên Kinh doanh',  salary: 15500000, location: 'Hà Nội',          department: 'Kinh doanh',        status: 'Đang làm việc', dob: '1994-08-12', gender: 'Nam', cccd: '001094078901', marital: 'Độc thân', address: '67 Chùa Bộc, Đống Đa, Hà Nội', level: 'Junior', startDate: '2022-07-15', contractType: 'Chính thức', manager: 'Nguyễn Văn An', phone: '0968 111 222', emailCompany: 'hung.do@hmb.agency', emailPersonal: 'hungdo94@gmail.com', emergencyName: 'Đỗ Thị Lan', emergencyRelation: 'Mẹ', emergencyPhone: '0968 111 223', allowance: 1500000, bonus: 3500000, leaveDays: 9, insurance: 'BHXH, BHYT, BHTN', bank: 'Vietinbank - ****3456', educationLevel: 'Đại học', major: 'Kinh doanh Quốc tế', school: 'Đại học Ngoại thương', graduationYear: 2016, certificates: 'Sales Excellence, CRM', skills: 'B2B Sales, Negotiation, CRM, Presentation', languages: 'Tiếng Anh B2' },
+      { id: 'NV010', name: 'Ngô Thị Hương',   position: 'Chuyên viên Tuyển dụng', salary: 17500000, location: 'TP. Hồ Chí Minh', department: 'Nhân sự',           status: 'Đang làm việc', dob: '1993-02-28', gender: 'Nữ', cccd: '079193089012', marital: 'Đã kết hôn', address: '150 Võ Văn Tần, Quận 3, TP. Hồ Chí Minh', level: 'Middle', startDate: '2021-09-01', contractType: 'Chính thức', manager: 'Lê Thị Hồng', phone: '0909 333 444', emailCompany: 'huong.ngo@hmb.agency', emailPersonal: 'huongngo93@gmail.com', emergencyName: 'Ngô Văn Tâm', emergencyRelation: 'Chồng', emergencyPhone: '0909 333 445', allowance: 1800000, bonus: 3000000, leaveDays: 12, insurance: 'BHXH, BHYT, BHTN', bank: 'VPBank - ****7890', educationLevel: 'Đại học', major: 'Tâm lý học', school: 'Đại học Khoa học Xã hội & Nhân văn', graduationYear: 2015, certificates: 'Talent Acquisition, HR Analytics', skills: 'Recruitment, Interviewing, Employer Branding, HRIS', languages: 'Tiếng Anh C1' },
+      { id: 'NV011', name: 'Trịnh Văn Khánh', position: 'Kỹ sư DevOps',          salary: 35000000, location: 'Hà Nội',          department: 'Công nghệ thông tin', status: 'Đang làm việc', dob: '1990-10-05', gender: 'Nam', cccd: '001090056789', marital: 'Đã kết hôn', address: '89 Nguyễn Chí Thanh, Đống Đa, Hà Nội', level: 'Senior', startDate: '2020-03-10', contractType: 'Chính thức', manager: 'Phạm Văn Khoa', phone: '0912 777 888', emailCompany: 'khanh.trinh@hmb.agency', emailPersonal: 'khanhtrinh90@gmail.com', emergencyName: 'Trịnh Thị Nga', emergencyRelation: 'Vợ', emergencyPhone: '0912 777 889', allowance: 3000000, bonus: 9000000, leaveDays: 15, insurance: 'BHXH, BHYT, BHTN', bank: 'Techcombank - ****1234', educationLevel: 'Đại học', major: 'Công nghệ Thông tin', school: 'Đại học Bách Khoa Hà Nội', graduationYear: 2012, certificates: 'CKA, AWS DevOps, Terraform', skills: 'Kubernetes, Docker, AWS, Terraform, CI/CD, Linux', languages: 'Tiếng Anh B2' },
+      { id: 'NV012', name: 'Lý Thị Kim Ngân', position: 'Kế toán trưởng',        salary: 30000000, location: 'Hà Nội',          department: 'Tài chính - Kế toán', status: 'Đang làm việc', dob: '1988-06-17', gender: 'Nữ', cccd: '001088067890', marital: 'Đã kết hôn', address: '22 Láng Hạ, Đống Đa, Hà Nội', level: 'Manager', startDate: '2019-05-20', contractType: 'Chính thức', manager: 'Ban Giám đốc', phone: '0934 555 666', emailCompany: 'ngan.ly@hmb.agency', emailPersonal: 'nganly88@gmail.com', emergencyName: 'Lý Văn Bình', emergencyRelation: 'Chồng', emergencyPhone: '0934 555 667', allowance: 3500000, bonus: 7000000, leaveDays: 16, insurance: 'BHXH, BHYT, BHTN, Bảo hiểm sức khỏe', bank: 'BIDV - ****4567', educationLevel: 'Thạc sĩ', major: 'Kế toán - Kiểm toán', school: 'Học viện Tài chính', graduationYear: 2014, certificates: 'CPA, ACCA, Chứng chỉ Kế toán trưởng', skills: 'Financial Reporting, Tax, Audit, Leadership, ERP', languages: 'Tiếng Anh C1' },
+      { id: 'NV013', name: 'Phan Văn Long',   position: 'Nhân viên Thiết kế',    salary: 16000000, location: 'Đà Nẵng',         department: 'Marketing',         status: 'Đang làm việc', dob: '1997-03-08', gender: 'Nam', cccd: '048097012345', marital: 'Độc thân', address: '45 Nguyễn Văn Linh, Hải Châu, Đà Nẵng', level: 'Junior', startDate: '2023-04-01', contractType: 'Chính thức', manager: 'Trần Văn Nam', phone: '0935 888 777', emailCompany: 'long.phan@hmb.agency', emailPersonal: 'longphan97@gmail.com', emergencyName: 'Phan Thị Hồng', emergencyRelation: 'Mẹ', emergencyPhone: '0935 888 778', allowance: 1200000, bonus: 2000000, leaveDays: 7, insurance: 'BHXH, BHYT, BHTN', bank: 'ACB - ****6789', educationLevel: 'Cao đẳng', major: 'Thiết kế Đồ họa', school: 'Cao đẳng FPT Polytechnic', graduationYear: 2019, certificates: 'Adobe Certified, Figma Professional', skills: 'Figma, Photoshop, Illustrator, UI/UX, Motion Design', languages: 'Tiếng Anh B1' },
+      { id: 'NV014', name: 'Võ Thị Thanh',    position: 'Chuyên viên Pháp chế',  salary: 24000000, location: 'TP. Hồ Chí Minh', department: 'Pháp chế',          status: 'Tạm nghỉ',      dob: '1991-11-20', gender: 'Nữ', cccd: '079191023456', marital: 'Đã kết hôn', address: '78 Pasteur, Quận 1, TP. Hồ Chí Minh', level: 'Senior', startDate: '2020-08-15', contractType: 'Chính thức', manager: 'Ban Giám đốc', phone: '0908 444 555', emailCompany: 'thanh.vo@hmb.agency', emailPersonal: 'thanhvo91@gmail.com', emergencyName: 'Võ Văn Hải', emergencyRelation: 'Bố', emergencyPhone: '0908 444 556', allowance: 2500000, bonus: 5000000, leaveDays: 10, insurance: 'BHXH, BHYT, BHTN', bank: 'Vietcombank - ****8901', educationLevel: 'Thạc sĩ', major: 'Luật Kinh tế', school: 'Đại học Luật TP.HCM', graduationYear: 2016, certificates: 'Luật sư tập sự, Chứng chỉ Pháp chế Doanh nghiệp', skills: 'Contract Law, Compliance, Legal Advisory, Negotiation', languages: 'Tiếng Anh C1, Tiếng Trung HSK4' },
+      { id: 'NV015', name: 'Đinh Quang Vinh', position: 'Thực tập sinh IT',      salary: 5000000,  location: 'Hà Nội',          department: 'Công nghệ thông tin', status: 'Đang làm việc', dob: '2001-09-10', gender: 'Nam', cccd: '001001034567', marital: 'Độc thân', address: '12 Tạ Quang Bửu, Hai Bà Trưng, Hà Nội', level: 'Intern', startDate: '2024-06-01', contractType: 'Thử việc', manager: 'Phạm Văn Khoa', phone: '0977 222 111', emailCompany: 'vinh.dinh@hmb.agency', emailPersonal: 'vinhdinh2k1@gmail.com', emergencyName: 'Đinh Văn Sơn', emergencyRelation: 'Bố', emergencyPhone: '0977 222 112', allowance: 500000, bonus: 500000, leaveDays: 2, insurance: 'BHYT', bank: 'MB Bank - ****2345', educationLevel: 'Đại học', major: 'Khoa học Máy tính', school: 'Đại học Bách Khoa Hà Nội', graduationYear: 2025, certificates: 'IELTS 7.0, Google IT Support', skills: 'Python, JavaScript, Git, SQL', languages: 'Tiếng Anh C1' }
+    ];
+
+    // ==================== CẤU HÌNH PHÂN TRANG ====================
+    const PAGE_SIZE = 10;
+    let currentPage = 1;
+    let currentFilter = null; // null = hiển thị tất cả
+
+    // ==================== DOM ====================
+    const listView = document.getElementById('listView');
+    const detailView = document.getElementById('detailView');
+    const tbody = document.getElementById('employeeTableBody');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const totalCountSpan = document.getElementById('totalCount');
+    const paginationControls = document.getElementById('paginationControls');
+    const showingFrom = document.getElementById('showingFrom');
+    const showingTo = document.getElementById('showingTo');
+    const totalRecords = document.getElementById('totalRecords');
+    const jumpInput = document.getElementById('jumpInput');
+    const jumpBtn = document.getElementById('jumpBtn');
+    const backBtn = document.getElementById('backBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const scrollToEditBtn = document.getElementById('scrollToEditBtn');
+    const editForm = document.getElementById('editForm');
+    const editFormWrapper = document.getElementById('editFormWrapper');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+
+    let currentEmployeeId = null;
+
+    // ==================== UTILS ====================
+    function formatSalary(salary) {
+      if (salary === null || salary === undefined || salary === '') return '—';
+      return Number(salary).toLocaleString('vi-VN') + ' ₫';
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '—';
+      const d = new Date(dateStr);
+      if (isNaN(d)) return dateStr;
+      return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    function calcSeniority(startDate) {
+      if (!startDate) return '—';
+      const start = new Date(startDate);
+      if (isNaN(start)) return '—';
+      const now = new Date();
+      let years = now.getFullYear() - start.getFullYear();
+      let months = now.getMonth() - start.getMonth();
+      if (months < 0) { years--; months += 12; }
+      if (years === 0 && months === 0) return 'Mới vào';
+      const parts = [];
+      if (years > 0) parts.push(years + ' năm');
+      if (months > 0) parts.push(months + ' tháng');
+      return parts.join(' ');
+    }
+
+    function maskCccd(cccd) {
+      if (!cccd || cccd.length < 6) return cccd || '—';
+      return '****' + cccd.slice(-6);
+    }
+
+    function getStatusTagClass(status) {
+      if (status === 'Đang làm việc') return 'tag-success';
+      if (status === 'Tạm nghỉ') return 'tag-warning';
+      if (status === 'Đã nghỉ') return 'tag-danger';
+      return 'tag';
+    }
+
+    function getStatusIcon(status) {
+      if (status === 'Đang làm việc') return 'fa-circle-check';
+      if (status === 'Tạm nghỉ') return 'fa-circle-pause';
+      if (status === 'Đã nghỉ') return 'fa-circle-xmark';
+      return 'fa-circle';
+    }
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str).replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    function splitCsv(str) {
+      if (!str) return [];
+      return str.split(',').map(s => s.trim()).filter(Boolean);
+    }
+
+    function showToast(msg) {
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    function setText(id, val) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (val === null || val === undefined || val === '') {
+        el.textContent = '—';
+        el.classList.add('muted');
+      } else {
+        el.textContent = val;
+        el.classList.remove('muted');
+      }
+    }
+
+    // ==================== LẤY DỮ LIỆU THEO TRANG ====================
+    function getDisplayData() {
+      if (currentFilter && currentFilter.length > 0) return currentFilter;
+      if (currentFilter && currentFilter.length === 0) return [];
+      return employees;
+    }
+
+    function getTotalPages() {
+      const data = getDisplayData();
+      return Math.max(1, Math.ceil(data.length / PAGE_SIZE));
+    }
+
+    function getPageData() {
+      const data = getDisplayData();
+      const start = (currentPage - 1) * PAGE_SIZE;
+      return data.slice(start, start + PAGE_SIZE);
+    }
+
+    // ==================== RENDER TABLE ====================
+    function renderTable() {
+      const data = getDisplayData();
+      const total = data.length;
+      totalCountSpan.textContent = total;
+
+      if (total === 0) {
+        tbody.innerHTML = `
+          <tr class="empty-row">
+            <td colspan="8">
+              <div class="empty-content">
+                <i class="fas fa-user-slash"></i>
+                <span>Không tìm thấy nhân viên nào phù hợp</span>
+              </div>
+            </td>
+          </tr>
+        `;
+        showingFrom.textContent = '0';
+        showingTo.textContent = '0';
+        totalRecords.textContent = '0';
+        renderPagination();
+        return;
+      }
+
+      // Đảm bảo trang hiện tại hợp lệ
+      const totalPages = getTotalPages();
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      const pageData = getPageData();
+      const startIdx = (currentPage - 1) * PAGE_SIZE + 1;
+      const endIdx = Math.min(currentPage * PAGE_SIZE, total);
+
+      showingFrom.textContent = startIdx;
+      showingTo.textContent = endIdx;
+      totalRecords.textContent = total;
+
+      tbody.innerHTML = pageData.map(emp => `
+        <tr>
+          <td data-label="Mã NV"><span class="emp-id"><i class="fas fa-id-badge" style="font-size:0.7rem;"></i>${emp.id}</span></td>
+          <td data-label="Họ tên"><span class="emp-name">${escapeHtml(emp.name)}</span></td>
+          <td data-label="Chức vụ"><span class="tag">${escapeHtml(emp.position)}</span></td>
+          <td data-label="Lương"><span class="salary-text">${formatSalary(emp.salary)}</span></td>
+          <td data-label="Vị trí"><span class="tag tag-success"><i class="fas fa-location-dot"></i>${escapeHtml(emp.location)}</span></td>
+          <td data-label="Phòng ban"><span class="dept-tag"><i class="fas fa-building"></i>${escapeHtml(emp.department)}</span></td>
+          <td data-label="Trạng thái"><span class="tag ${getStatusTagClass(emp.status)}"><i class="fas ${getStatusIcon(emp.status)}"></i>${escapeHtml(emp.status)}</span></td>
+          <td>
+            <button class="btn-edit" data-id="${emp.id}" aria-label="Chỉnh sửa ${escapeHtml(emp.name)}">
+              <i class="fas fa-pen-to-square"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+
+      tbody.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.addEventListener('click', () => openDetail(btn.dataset.id));
+      });
+
+      renderPagination();
+    }
+
+    // ==================== RENDER PAGINATION ====================
+    function renderPagination() {
+      const totalPages = getTotalPages();
+      if (totalPages <= 1) {
+        paginationControls.innerHTML = '';
+        return;
+      }
+
+      let html = '';
+
+      // Nút Previous
+      html += `
+        <button class="page-btn" data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''} aria-label="Trang trước">
+          <i class="fas fa-chevron-left"></i><span class="page-btn-text"> Trước</span>
+        </button>
+      `;
+
+      // Logic hiển thị các số trang: 1 ... 4 5 [6] 7 8 ... 10
+      const pages = [];
+      const delta = 1;
+
+      for (let i = 1; i <= totalPages; i++) {
+        if (
+          i === 1 ||
+          i === totalPages ||
+          (i >= currentPage - delta && i <= currentPage + delta)
+        ) {
+          pages.push(i);
+        }
+      }
+
+      // Chèn dấu ... khi có khoảng trống
+      let lastPage = 0;
+      pages.forEach(p => {
+        if (lastPage && p - lastPage > 1) {
+          html += `<span class="page-ellipsis">…</span>`;
+        }
+        html += `
+          <button class="page-btn ${p === currentPage ? 'active' : ''}" data-page="${p}" aria-label="Trang ${p}">
+            ${p}
+          </button>
+        `;
+        lastPage = p;
+      });
+
+      // Nút Next
+      html += `
+        <button class="page-btn" data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''} aria-label="Trang sau">
+          <span class="page-btn-text">Sau </span><i class="fas fa-chevron-right"></i>
+        </button>
+      `;
+
+      paginationControls.innerHTML = html;
+
+      // Gắn sự kiện
+      paginationControls.querySelectorAll('.page-btn[data-page]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const page = parseInt(btn.dataset.page);
+          if (page >= 1 && page <= totalPages && page !== currentPage) {
+            currentPage = page;
+            renderTable();
+            scrollToListTop();
+          }
+        });
+      });
+    }
+
+    function scrollToListTop() {
+      const panel = document.querySelector('#listView .panel');
+      if (panel) {
+        const y = panel.getBoundingClientRect().top + window.pageYOffset - 20;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }
+
+    // ==================== TRA CỨU ====================
+    function searchByEmployeeId() {
+      const query = searchInput.value.trim();
+      if (query === '') { showAll(); return; }
+
+      currentFilter = employees.filter(emp =>
+        emp.id.toLowerCase() === query.toLowerCase()
+      );
+      currentPage = 1;
+      renderTable();
+    }
+
+    function showAll() {
+      currentFilter = null;
+      currentPage = 1;
+      searchInput.value = '';
+      renderTable();
+    }
+
+    // ==================== VIEW SWITCHING ====================
+    function switchView(view) {
+      listView.classList.remove('active');
+      detailView.classList.remove('active');
+      view.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==================== TAB SWITCHING ====================
+    function setupTabs() {
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const tabPanels = document.querySelectorAll('.tab-panel');
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.tab;
+          tabBtns.forEach(b => b.classList.remove('active'));
+          tabPanels.forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          const panel = document.querySelector(`[data-tab-panel="${target}"]`);
+          if (panel) panel.classList.add('active');
+        });
+      });
+    }
+
+    // ==================== OPEN DETAIL ====================
+    function openDetail(id) {
+      const emp = employees.find(e => e.id === id);
+      if (!emp) return;
+
+      currentEmployeeId = id;
+
+      document.getElementById('detailAvatar').textContent = emp.name.trim().split(' ').slice(-1)[0].charAt(0).toUpperCase();
+      document.getElementById('detailName').textContent = emp.name;
+      document.getElementById('detailRole').textContent = emp.position + ' · ' + emp.department;
+      document.getElementById('detailStatusText').textContent = emp.status;
+      const dot = document.querySelector('#detailStatusBadge .status-dot');
+      if (dot) {
+        if (emp.status === 'Đang làm việc') dot.style.background = '#4ade80';
+        else if (emp.status === 'Tạm nghỉ') dot.style.background = '#fbbf24';
+        else dot.style.background = '#f87171';
+      }
+
+      refreshDetailView(emp);
+
+      // Điền form
+      document.getElementById('editId').value = emp.id;
+      document.getElementById('editName').value = emp.name || '';
+      document.getElementById('editDob').value = emp.dob || '';
+      document.getElementById('editGender').value = emp.gender || '';
+      document.getElementById('editCccd').value = emp.cccd || '';
+      document.getElementById('editMarital').value = emp.marital || '';
+      document.getElementById('editAddress').value = emp.address || '';
+      document.getElementById('editPosition').value = emp.position || '';
+      document.getElementById('editDepartment').value = emp.department || '';
+      document.getElementById('editLocation').value = emp.location || '';
+      document.getElementById('editLevel').value = emp.level || '';
+      document.getElementById('editStartDate').value = emp.startDate || '';
+      document.getElementById('editContractType').value = emp.contractType || '';
+      document.getElementById('editManager').value = emp.manager || '';
+      document.getElementById('editStatus').value = emp.status || 'Đang làm việc';
+      document.getElementById('editPhone').value = emp.phone || '';
+      document.getElementById('editEmailCompany').value = emp.emailCompany || '';
+      document.getElementById('editEmailPersonal').value = emp.emailPersonal || '';
+      document.getElementById('editEmergencyName').value = emp.emergencyName || '';
+      document.getElementById('editEmergencyRelation').value = emp.emergencyRelation || '';
+      document.getElementById('editEmergencyPhone').value = emp.emergencyPhone || '';
+      document.getElementById('editSalary').value = emp.salary || '';
+      document.getElementById('editAllowance').value = emp.allowance || '';
+      document.getElementById('editBonus').value = emp.bonus || '';
+      document.getElementById('editLeaveDays').value = emp.leaveDays || '';
+      document.getElementById('editInsurance').value = emp.insurance || '';
+      document.getElementById('editBank').value = emp.bank || '';
+      document.getElementById('editEducationLevel').value = emp.educationLevel || '';
+      document.getElementById('editMajor').value = emp.major || '';
+      document.getElementById('editSchool').value = emp.school || '';
+      document.getElementById('editGraduationYear').value = emp.graduationYear || '';
+      document.getElementById('editCertificates').value = emp.certificates || '';
+      document.getElementById('editSkills').value = emp.skills || '';
+      document.getElementById('editLanguages').value = emp.languages || '';
+
+      // Reset tab
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelector('.tab-btn[data-tab="overview"]').classList.add('active');
+      document.querySelector('[data-tab-panel="overview"]').classList.add('active');
+
+      switchView(detailView);
+    }
+
+    function refreshDetailView(emp) {
+      document.getElementById('detailAvatar').textContent = emp.name.trim().split(' ').slice(-1)[0].charAt(0).toUpperCase();
+      document.getElementById('detailName').textContent = emp.name;
+      document.getElementById('detailRole').textContent = emp.position + ' · ' + emp.department;
+      document.getElementById('detailStatusText').textContent = emp.status;
+
+      setText('infoId', emp.id);
+      setText('infoName', emp.name);
+      setText('infoDob', formatDate(emp.dob));
+      setText('infoGender', emp.gender);
+      setText('infoCccd', maskCccd(emp.cccd));
+      setText('infoMarital', emp.marital);
+      setText('infoAddress', emp.address);
+      setText('infoPosition', emp.position);
+      setText('infoDepartment', emp.department);
+      setText('infoLocation', emp.location);
+      setText('infoLevel', emp.level);
+      setText('infoStartDate', formatDate(emp.startDate));
+      setText('infoSeniority', calcSeniority(emp.startDate));
+      setText('infoContractType', emp.contractType);
+      setText('infoManager', emp.manager);
+      setText('infoStatus', emp.status);
+      setText('infoPhone', emp.phone);
+      setText('infoEmailCompany', emp.emailCompany);
+      setText('infoEmailPersonal', emp.emailPersonal);
+      setText('infoEmergencyName', emp.emergencyName);
+      setText('infoEmergencyRelation', emp.emergencyRelation);
+      setText('infoEmergencyPhone', emp.emergencyPhone);
+      setText('infoSalary', formatSalary(emp.salary));
+      setText('infoAllowance', emp.allowance ? formatSalary(emp.allowance) : '—');
+      setText('infoBonus', emp.bonus ? formatSalary(emp.bonus) : '—');
+      setText('infoLeaveDays', emp.leaveDays !== undefined && emp.leaveDays !== '' ? emp.leaveDays + ' ngày' : '—');
+      setText('infoInsurance', emp.insurance);
+      setText('infoBank', emp.bank);
+      setText('infoEducationLevel', emp.educationLevel);
+      setText('infoMajor', emp.major);
+      setText('infoSchool', emp.school);
+      setText('infoGraduationYear', emp.graduationYear);
+      setText('infoCertificates', emp.certificates);
+
+      const skillsEl = document.getElementById('infoSkills');
+      const skills = splitCsv(emp.skills);
+      skillsEl.innerHTML = skills.length
+        ? `<div class="skill-chips">${skills.map(s => `<span class="skill-chip">${escapeHtml(s)}</span>`).join('')}</div>`
+        : '—';
+      skillsEl.classList.toggle('muted', skills.length === 0);
+
+      const langsEl = document.getElementById('infoLanguages');
+      const langs = splitCsv(emp.languages);
+      langsEl.innerHTML = langs.length
+        ? `<div class="skill-chips">${langs.map(s => `<span class="skill-chip">${escapeHtml(s)}</span>`).join('')}</div>`
+        : '—';
+      langsEl.classList.toggle('muted', langs.length === 0);
+    }
+
+    // ==================== FORM SUBMIT ====================
+    editForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const emp = employees.find(e => e.id === currentEmployeeId);
+      if (!emp) return;
+
+      emp.name = document.getElementById('editName').value.trim();
+      emp.dob = document.getElementById('editDob').value;
+      emp.gender = document.getElementById('editGender').value;
+      emp.cccd = document.getElementById('editCccd').value.trim();
+      emp.marital = document.getElementById('editMarital').value;
+      emp.address = document.getElementById('editAddress').value.trim();
+      emp.position = document.getElementById('editPosition').value.trim();
+      emp.department = document.getElementById('editDepartment').value.trim();
+      emp.location = document.getElementById('editLocation').value.trim();
+      emp.level = document.getElementById('editLevel').value;
+      emp.startDate = document.getElementById('editStartDate').value;
+      emp.contractType = document.getElementById('editContractType').value;
+      emp.manager = document.getElementById('editManager').value.trim();
+      emp.status = document.getElementById('editStatus').value;
+      emp.phone = document.getElementById('editPhone').value.trim();
+      emp.emailCompany = document.getElementById('editEmailCompany').value.trim();
+      emp.emailPersonal = document.getElementById('editEmailPersonal').value.trim();
+      emp.emergencyName = document.getElementById('editEmergencyName').value.trim();
+      emp.emergencyRelation = document.getElementById('editEmergencyRelation').value.trim();
+      emp.emergencyPhone = document.getElementById('editEmergencyPhone').value.trim();
+      emp.salary = Number(document.getElementById('editSalary').value) || 0;
+      emp.allowance = Number(document.getElementById('editAllowance').value) || 0;
+      emp.bonus = Number(document.getElementById('editBonus').value) || 0;
+      emp.leaveDays = Number(document.getElementById('editLeaveDays').value) || 0;
+      emp.insurance = document.getElementById('editInsurance').value.trim();
+      emp.bank = document.getElementById('editBank').value.trim();
+      emp.educationLevel = document.getElementById('editEducationLevel').value;
+      emp.major = document.getElementById('editMajor').value.trim();
+      emp.school = document.getElementById('editSchool').value.trim();
+      emp.graduationYear = document.getElementById('editGraduationYear').value;
+      emp.certificates = document.getElementById('editCertificates').value.trim();
+      emp.skills = document.getElementById('editSkills').value.trim();
+      emp.languages = document.getElementById('editLanguages').value.trim();
+
+      refreshDetailView(emp);
+      showToast('Đã lưu thay đổi thành công!');
+      renderTable();
+    });
+
+    // ==================== SỰ KIỆN ====================
+    searchBtn.addEventListener('click', searchByEmployeeId);
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); searchByEmployeeId(); }
+    });
+    resetBtn.addEventListener('click', showAll);
+
+    backBtn.addEventListener('click', () => switchView(listView));
+
+    scrollToEditBtn.addEventListener('click', () => {
+      editFormWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const firstInput = document.getElementById('editName');
+      setTimeout(() => firstInput && firstInput.focus(), 400);
+    });
+
+    cancelEditBtn.addEventListener('click', () => {
+      const emp = employees.find(e => e.id === currentEmployeeId);
+      if (emp) {
+        document.getElementById('editName').value = emp.name || '';
+        document.getElementById('editDob').value = emp.dob || '';
+        document.getElementById('editGender').value = emp.gender || '';
+        document.getElementById('editCccd').value = emp.cccd || '';
+        document.getElementById('editMarital').value = emp.marital || '';
+        document.getElementById('editAddress').value = emp.address || '';
+        document.getElementById('editPosition').value = emp.position || '';
+        document.getElementById('editDepartment').value = emp.department || '';
+        document.getElementById('editLocation').value = emp.location || '';
+        document.getElementById('editLevel').value = emp.level || '';
+        document.getElementById('editStartDate').value = emp.startDate || '';
+        document.getElementById('editContractType').value = emp.contractType || '';
+        document.getElementById('editManager').value = emp.manager || '';
+        document.getElementById('editStatus').value = emp.status || 'Đang làm việc';
+        document.getElementById('editPhone').value = emp.phone || '';
+        document.getElementById('editEmailCompany').value = emp.emailCompany || '';
+        document.getElementById('editEmailPersonal').value = emp.emailPersonal || '';
+        document.getElementById('editEmergencyName').value = emp.emergencyName || '';
+        document.getElementById('editEmergencyRelation').value = emp.emergencyRelation || '';
+        document.getElementById('editEmergencyPhone').value = emp.emergencyPhone || '';
+        document.getElementById('editSalary').value = emp.salary || '';
+        document.getElementById('editAllowance').value = emp.allowance || '';
+        document.getElementById('editBonus').value = emp.bonus || '';
+        document.getElementById('editLeaveDays').value = emp.leaveDays || '';
+        document.getElementById('editInsurance').value = emp.insurance || '';
+        document.getElementById('editBank').value = emp.bank || '';
+        document.getElementById('editEducationLevel').value = emp.educationLevel || '';
+        document.getElementById('editMajor').value = emp.major || '';
+        document.getElementById('editSchool').value = emp.school || '';
+        document.getElementById('editGraduationYear').value = emp.graduationYear || '';
+        document.getElementById('editCertificates').value = emp.certificates || '';
+        document.getElementById('editSkills').value = emp.skills || '';
+        document.getElementById('editLanguages').value = emp.languages || '';
+      }
+      showToast('Đã hủy thay đổi');
+    });
+
+    // Jump to page
+    function handleJump() {
+      const totalPages = getTotalPages();
+      const val = parseInt(jumpInput.value);
+      if (isNaN(val)) {
+        showToast('Vui lòng nhập số trang hợp lệ');
+        return;
+      }
+      if (val < 1 || val > totalPages) {
+        showToast(`Trang phải từ 1 đến ${totalPages}`);
+        return;
+      }
+      currentPage = val;
+      renderTable();
+      scrollToListTop();
+      jumpInput.value = '';
+    }
+
+    jumpBtn.addEventListener('click', handleJump);
+    jumpInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); handleJump(); }
+    });
+
+    // Khởi tạo
+    setupTabs();
+    renderTable();
+  })();
+</script>
+</body>
+</html>
